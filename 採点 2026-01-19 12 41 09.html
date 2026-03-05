@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鉄壁 前置詞クイズ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Playfair+Display:ital,wght@0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0b10;
+  --surface: #13131c;
+  --card: #18182a;
+  --card2: #1e1e32;
+  --border: #2a2a42;
+  --accent: #818cf8;
+  --accent2: #c084fc;
+  --gold: #fbbf24;
+  --text: #e8e8f4;
+  --muted: #6b7280;
+  --green: #34d399;
+  --red: #f87171;
+  --yellow: #fde68a;
+  --orange: #fb923c;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:"Noto Serif JP",serif;min-height:100vh;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* ====HEADER==== */
+.header{
+background:linear-gradient(135deg,#0d0d18 0%,#151528 60%,#0d0d18 100%);
+border-bottom:1px solid var(–border);
+padding:18px 24px;
+position:sticky;top:0;z-index:200;
+}
+.header-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.logo{font-family:“Playfair Display”,serif;font-size:1.4rem;font-weight:700;color:var(–gold);letter-spacing:.04em;}
+.logo em{font-style:italic;color:var(–accent2);font-size:.85em;}
+.header-right{margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.badge{background:var(–card);border:1px solid var(–border);border-radius:20px;padding:4px 12px;
+font-family:“JetBrains Mono”,monospace;font-size:.72rem;color:var(–muted);}
+.badge strong{color:var(–accent);}
+.badge.g strong{color:var(–green);}
+.badge.r strong{color:var(–red);}
+
+/* ====VIEWS==== */
+#view-menu,#view-quiz,#view-result,#view-list{display:none;}
+#view-menu.active,#view-quiz.active,#view-result.active,#view-list.active{display:block;}
+
+/* ====MENU==== */
+.menu-wrap{max-width:600px;margin:0 auto;padding:48px 24px;text-align:center;}
+.menu-title{font-family:“Playfair Display”,serif;font-size:2rem;font-weight:700;color:var(–gold);margin-bottom:8px;}
+.menu-sub{color:var(–muted);font-size:.9rem;margin-bottom:40px;}
+.menu-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:32px;}
+.mode-card{background:var(–card);border:1px solid var(–border);border-radius:14px;padding:22px 18px;cursor:pointer;transition:all .2s;text-align:left;}
+.mode-card:hover{border-color:var(–accent);transform:translateY(-2px);background:var(–card2);}
+.mode-card .icon{font-size:1.8rem;margin-bottom:10px;}
+.mode-card .title{font-size:1rem;font-weight:600;color:var(–text);margin-bottom:6px;}
+.mode-card .desc{font-size:.78rem;color:var(–muted);line-height:1.5;}
+.options-box{background:var(–card);border:1px solid var(–border);border-radius:12px;padding:20px;margin-bottom:24px;text-align:left;}
+.options-box h3{font-size:.85rem;color:var(–muted);margin-bottom:14px;letter-spacing:.05em;}
+.opt-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+.opt-row label{font-size:.85rem;color:var(–text);white-space:nowrap;}
+select,input[type=number]{background:var(–card2);border:1px solid var(–border);border-radius:8px;
+padding:7px 10px;color:var(–text);font-family:“Noto Serif JP”,serif;font-size:.83rem;outline:none;}
+select:focus,input[type=number]:focus{border-color:var(–accent);}
+input[type=number]{width:75px;text-align:center;font-family:“JetBrains Mono”,monospace;}
+.btn{background:var(–card);border:1px solid var(–border);border-radius:10px;padding:10px 18px;
+color:var(–text);font-family:“Noto Serif JP”,serif;font-size:.88rem;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.btn:hover{border-color:var(–accent);color:var(–accent);}
+.btn-primary{background:linear-gradient(135deg,#6366f1,#818cf8);border-color:#818cf8;color:#fff;font-weight:700;}
+.btn-primary:hover{opacity:.9;color:#fff;}
+.btn-gold{background:linear-gradient(135deg,#c8972a,#fbbf24);border-color:#fbbf24;color:#1a1200;font-weight:700;}
+.btn-gold:hover{opacity:.9;color:#1a1200;}
+
+/* ====QUIZ AREA==== */
+.quiz-wrap{max-width:680px;margin:0 auto;padding:28px 24px 60px;}
+.q-top{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+.q-counter{font-family:“JetBrains Mono”,monospace;font-size:.8rem;color:var(–muted);}
+.q-score{margin-left:auto;display:flex;gap:8px;}
+.score-g{font-family:“JetBrains Mono”,monospace;font-size:.8rem;color:var(–green);}
+.score-r{font-family:“JetBrains Mono”,monospace;font-size:.8rem;color:var(–red);}
+
+.progress-bar{width:100%;height:5px;background:var(–border);border-radius:3px;overflow:hidden;margin-bottom:24px;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(–accent),var(–accent2));border-radius:3px;transition:width .3s ease;}
+
+.q-card{background:var(–card);border:1px solid var(–border);border-radius:16px;padding:32px 28px 28px;margin-bottom:20px;position:relative;}
+.q-card-num{position:absolute;top:14px;left:18px;font-family:“JetBrains Mono”,monospace;font-size:.68rem;color:var(–muted);}
+.q-mode-tag{position:absolute;top:12px;right:14px;font-size:.65rem;background:rgba(129,140,248,.15);
+border:1px solid rgba(129,140,248,.3);border-radius:10px;padding:2px 8px;color:var(–accent);}
+
+.q-word{font-family:“Playfair Display”,serif;font-size:2.4rem;font-weight:700;color:var(–text);text-align:center;margin:12px 0 8px;}
+.q-ja{font-size:.88rem;color:var(–muted);text-align:center;line-height:1.6;margin-bottom:20px;}
+.q-context{font-size:.82rem;color:var(–accent2);text-align:center;margin-bottom:24px;
+background:rgba(192,132,252,.08);border:1px solid rgba(192,132,252,.2);border-radius:8px;padding:10px 16px;}
+.q-context span{color:var(–yellow);font-weight:600;}
+
+.q-label{font-size:.78rem;color:var(–muted);text-align:center;margin-bottom:12px;letter-spacing:.05em;}
+
+/* Input quiz */
+.prep-input-wrap{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:8px;}
+.prep-input{background:var(–card2);border:2px solid var(–border);border-radius:10px;
+padding:10px 16px;color:var(–text);font-family:“JetBrains Mono”,monospace;font-size:1rem;
+outline:none;width:160px;text-align:center;transition:border-color .2s;}
+.prep-input:focus{border-color:var(–accent);}
+.prep-input.correct{border-color:var(–green);background:rgba(52,211,153,.08);color:var(–green);}
+.prep-input.wrong{border-color:var(–red);background:rgba(248,113,113,.08);color:var(–red);animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* Choice quiz */
+.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:8px;}
+.choice-btn{background:var(–card2);border:2px solid var(–border);border-radius:12px;
+padding:14px 18px;color:var(–text);font-family:“JetBrains Mono”,monospace;font-size:1.05rem;
+cursor:pointer;transition:all .18s;text-align:center;font-weight:600;}
+.choice-btn:hover:not(:disabled){border-color:var(–accent);background:rgba(129,140,248,.12);}
+.choice-btn.correct{border-color:var(–green);background:rgba(52,211,153,.12);color:var(–green);}
+.choice-btn.wrong{border-color:var(–red);background:rgba(248,113,113,.1);color:var(–red);}
+.choice-btn:disabled{cursor:default;opacity:.7;}
+
+/* Feedback */
+.feedback{border-radius:12px;padding:14px 18px;font-size:.88rem;line-height:1.6;
+text-align:center;margin-bottom:12px;display:none;}
+.feedback.show{display:block;}
+.feedback.ok{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);color:var(–green);}
+.feedback.ng{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:var(–red);}
+.feedback .ans{color:var(–gold);font-weight:700;font-family:“JetBrains Mono”,monospace;}
+.feedback .ja-hint{color:var(–muted);font-size:.8rem;margin-top:6px;}
+
+.q-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+
+/* ====RESULT==== */
+.result-wrap{max-width:600px;margin:0 auto;padding:48px 24px;text-align:center;}
+.result-circle{width:160px;height:160px;border-radius:50%;margin:0 auto 28px;display:flex;
+flex-direction:column;align-items:center;justify-content:center;
+background:conic-gradient(var(–accent) 0% var(–score-pct), var(–border) var(–score-pct) 100%);
+position:relative;}
+.result-circle::before{content:””;position:absolute;width:130px;height:130px;border-radius:50%;background:var(–bg);}
+.result-score{position:relative;z-index:1;font-family:“Playfair Display”,serif;font-size:2.4rem;font-weight:700;color:var(–gold);}
+.result-label{position:relative;z-index:1;font-size:.72rem;color:var(–muted);margin-top:2px;}
+.result-title{font-family:“Playfair Display”,serif;font-size:1.6rem;font-weight:700;color:var(–text);margin-bottom:8px;}
+.result-sub{color:var(–muted);font-size:.88rem;margin-bottom:32px;}
+.result-stats{display:flex;gap:14px;justify-content:center;margin-bottom:32px;flex-wrap:wrap;}
+.rs-box{background:var(–card);border:1px solid var(–border);border-radius:12px;padding:16px 24px;min-width:100px;}
+.rs-num{font-family:“JetBrains Mono”,monospace;font-size:1.6rem;font-weight:700;}
+.rs-lbl{font-size:.72rem;color:var(–muted);margin-top:4px;}
+.result-miss{text-align:left;margin-bottom:28px;}
+.result-miss h3{font-size:.82rem;color:var(–muted);margin-bottom:12px;letter-spacing:.05em;}
+.miss-list{display:flex;flex-direction:column;gap:8px;}
+.miss-item{background:var(–card);border:1px solid rgba(248,113,113,.25);border-radius:10px;
+padding:10px 14px;display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+.miss-en{font-family:“Playfair Display”,serif;font-size:1rem;font-weight:700;color:var(–text);min-width:120px;}
+.miss-detail{font-size:.78rem;color:var(–muted);line-height:1.5;}
+.miss-ans{color:var(–green);font-family:“JetBrains Mono”,monospace;}
+.miss-your{color:var(–red);font-family:“JetBrains Mono”,monospace;}
+.result-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+
+/* ====LIST VIEW==== */
+.list-wrap{max-width:860px;margin:0 auto;padding:28px 24px 60px;}
+.list-filter{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center;}
+.list-info{font-family:“JetBrains Mono”,monospace;font-size:.75rem;color:var(–muted);margin-bottom:12px;}
+.prep-table{width:100%;border-collapse:collapse;}
+.prep-table th{font-size:.72rem;color:var(–muted);font-weight:400;letter-spacing:.05em;padding:8px 12px;
+border-bottom:1px solid var(–border);text-align:left;font-family:“JetBrains Mono”,monospace;}
+.prep-table td{padding:10px 12px;border-bottom:1px solid rgba(42,42,66,.6);vertical-align:top;font-size:.85rem;}
+.prep-table tr:hover td{background:var(–card);}
+.td-num{font-family:“JetBrains Mono”,monospace;color:var(–muted);font-size:.72rem;width:44px;}
+.td-en{font-family:“Playfair Display”,serif;font-size:1rem;font-weight:700;color:var(–text);}
+.td-prep{font-family:“JetBrains Mono”,monospace;}
+.prep-tag{display:inline-block;background:rgba(129,140,248,.15);border:1px solid rgba(129,140,248,.3);
+color:var(–accent);border-radius:6px;padding:2px 8px;font-size:.78rem;margin:2px 3px;}
+.td-ja{font-size:.78rem;color:var(–muted);line-height:1.5;}
+
+@media(max-width:580px){
+.q-word{font-size:1.8rem;}
+.choices{grid-template-columns:1fr;}
+.result-stats{gap:10px;}
+}
+</style>
+
+</head>
+<body>
+
+<!-- HEADER -->
+
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">鉄壁 <em>前置詞クイズ</em></div>
+    <div class="header-right">
+      <div class="badge">対象語数 <strong>152</strong></div>
+      <div class="badge g">正解 <strong id="hdr-correct">0</strong></div>
+      <div class="badge r">不正解 <strong id="hdr-wrong">0</strong></div>
+      <button class="btn" onclick="showView('view-menu')">☰ メニュー</button>
+    </div>
+  </div>
+</header>
+
+<!-- ===MENU VIEW=== -->
+
+<div id="view-menu" class="active">
+  <div class="menu-wrap">
+    <div class="menu-title">前置詞クイズ</div>
+    <div class="menu-sub">前置詞を使う152語を完全収録 — 鉄壁単語帳より抽出</div>
+
+```
+<div class="options-box">
+  <h3>⚙ 設定</h3>
+  <div class="opt-row">
+    <label>出題範囲 No.</label>
+    <input type="number" id="opt-from" value="1" min="1" max="2176">
+    <label>〜</label>
+    <input type="number" id="opt-to" value="2176" min="1" max="2176">
+  </div>
+  <div class="opt-row">
+    <label>順序</label>
+    <select id="opt-order">
+      <option value="seq">番号順</option>
+      <option value="rand">シャッフル</option>
+    </select>
+    <label>出題数</label>
+    <select id="opt-count">
+      <option value="20">20問</option>
+      <option value="40">40問</option>
+      <option value="all" selected>全問</option>
+    </select>
+  </div>
+</div>
+
+<div class="menu-cards">
+  <div class="mode-card" onclick="startQuiz('choice4')">
+    <div class="icon">🎯</div>
+    <div class="title">4択クイズ</div>
+    <div class="desc">4つの前置詞から正しいものを選ぶ。スピード重視の練習に。</div>
+  </div>
+  <div class="mode-card" onclick="startQuiz('input')">
+    <div class="icon">✍️</div>
+    <div class="title">入力クイズ</div>
+    <div class="desc">前置詞を自分で入力する。より本格的な記憶テストに。</div>
+  </div>
+  <div class="mode-card" onclick="startQuiz('miss')">
+    <div class="icon">🔥</div>
+    <div class="title">苦手のみ</div>
+    <div class="desc">前回間違えた単語だけを繰り返し出題。弱点集中攻略。</div>
+  </div>
+  <div class="mode-card" onclick="showList()">
+    <div class="icon">📋</div>
+    <div class="title">一覧で確認</div>
+    <div class="desc">152語と使う前置詞を一覧表示。まず眺めて把握しよう。</div>
+  </div>
+</div>
+```
+
+  </div>
+</div>
+
+<!-- ===QUIZ VIEW=== -->
+
+<div id="view-quiz">
+  <div class="quiz-wrap">
+    <div class="q-top">
+      <span class="q-counter" id="q-counter">1 / 1</span>
+      <div class="q-score">
+        <span class="score-g">✓ <span id="q-correct">0</span></span>
+        <span class="score-r">✗ <span id="q-wrong">0</span></span>
+      </div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="q-progress"></div></div>
+
+```
+<div class="q-card">
+  <span class="q-card-num" id="q-num">#1</span>
+  <span class="q-mode-tag" id="q-mode-tag">4択</span>
+  <div class="q-word" id="q-word">-</div>
+  <div class="q-ja" id="q-ja">-</div>
+  <div class="q-context" id="q-context" style="display:none"></div>
+</div>
+
+<div class="q-label" id="q-label">使う前置詞はどれ？</div>
+
+<!-- Choice buttons -->
+<div class="choices" id="choices-area"></div>
+
+<!-- Input box -->
+<div id="input-area" style="display:none">
+  <div class="prep-input-wrap">
+    <input type="text" class="prep-input" id="prep-input" placeholder="前置詞を入力…" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <button class="btn btn-primary" onclick="submitInput()">確認</button>
+  </div>
+  <div style="font-size:.72rem;color:var(--muted);text-align:center;margin-top:4px;">
+    複数ある場合はいずれか一つを入力 / Enterキーでも確認
+  </div>
+</div>
+
+<div class="feedback" id="feedback"></div>
+
+<div class="q-actions">
+  <button class="btn" id="btn-next" onclick="nextQuestion()" style="display:none">次へ →</button>
+</div>
+```
+
+  </div>
+</div>
+
+<!-- ===RESULT VIEW=== -->
+
+<div id="view-result">
+  <div class="result-wrap">
+    <div class="result-circle" id="result-circle">
+      <div class="result-score" id="res-score">0/0</div>
+      <div class="result-label">正解率</div>
+    </div>
+    <div class="result-title" id="res-title">お疲れさまでした！</div>
+    <div class="result-sub" id="res-sub"></div>
+    <div class="result-stats">
+      <div class="rs-box"><div class="rs-num" style="color:var(--green)" id="rs-correct">0</div><div class="rs-lbl">正解</div></div>
+      <div class="rs-box"><div class="rs-num" style="color:var(--red)" id="rs-wrong">0</div><div class="rs-lbl">不正解</div></div>
+      <div class="rs-box"><div class="rs-num" style="color:var(--gold)" id="rs-pct">0%</div><div class="rs-lbl">正解率</div></div>
+    </div>
+    <div class="result-miss" id="result-miss" style="display:none">
+      <h3>⚠ 間違えた単語</h3>
+      <div class="miss-list" id="miss-list"></div>
+    </div>
+    <div class="result-actions">
+      <button class="btn btn-primary" onclick="retryQuiz()">🔄 もう一度</button>
+      <button class="btn" onclick="retryMiss()">🔥 間違いのみ再挑戦</button>
+      <button class="btn btn-gold" onclick="showView('view-menu')">← メニューへ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===LIST VIEW=== -->
+
+<div id="view-list">
+  <div class="list-wrap">
+    <div class="list-filter">
+      <input type="text" id="list-search" placeholder="🔍 単語・前置詞で検索…" style="flex:1;min-width:160px;" oninput="renderList()">
+      <select id="list-prep-filter" onchange="renderList()">
+        <option value="">全前置詞</option>
+        <option value="to">to</option>
+        <option value="for">for</option>
+        <option value="with">with</option>
+        <option value="on">on</option>
+        <option value="from">from</option>
+        <option value="in">in</option>
+        <option value="of">of</option>
+        <option value="at">at</option>
+        <option value="about">about</option>
+        <option value="into">into</option>
+      </select>
+      <button class="btn btn-gold" onclick="showView('view-menu')">← 戻る</button>
+    </div>
+    <div class="list-info" id="list-info"></div>
+    <table class="prep-table">
+      <thead>
+        <tr>
+          <th>No.</th><th>英単語</th><th>前置詞</th><th>意味（抜粋）</th>
+        </tr>
+      </thead>
+      <tbody id="list-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const prepWords = [{"id": 1, "en": "vital", "ja": "(～にとって)非常に重要な(to, for～)；生命の", "preps": ["for", "to"], "contexts": [{"preps": ["to", "for"], "hint": "(～にとって)非常に重要な(to, for～)"}]}, {"id": 4, "en": "essential", "ja": "(～にとって)重要な, 必要不可欠な(to, for～)；本質的な", "preps": ["for", "to"], "contexts": [{"preps": ["to", "for"], "hint": "必要不可欠な(to, for～)"}]}, {"id": 5, "en": "indispensable", "ja": "(～にとって)重要な, 必要不可欠な(to, for～)", "preps": ["for", "to"], "contexts": [{"preps": ["to", "for"], "hint": "必要不可欠な(to, for～)"}]}, {"id": 16, "en": "familiar", "ja": "(～に)よく知られた(to～)；(～に)精通している(with～)；親しい", "preps": ["to", "with"], "contexts": [{"preps": ["to"], "hint": "(～に)よく知られた(to～)"}, {"preps": ["with"], "hint": "(～に)精通している(with～)"}]}, {"id": 29, "en": "typical", "ja": "典型的な, (～)らしい(of～)", "preps": ["of"], "contexts": [{"preps": ["of"], "hint": "(～)らしい(of～)"}]}, {"id": 30, "en": "unique", "ja": "(～に)特有の(to～), 独自の；唯一の", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(～に)特有の(to～)"}]}, {"id": 31, "en": "peculiar", "ja": "(～に)特有の(to～)；風変わりな", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(～に)特有の(to～)"}]}, {"id": 35, "en": "distinguish", "ja": "～を(…と)区別する, 見分ける(from…)", "preps": ["from"], "contexts": [{"preps": ["from"], "hint": "見分ける(from…)"}]}, {"id": 54, "en": "substitute", "ja": "～を(…の代わりに)代用する(for…)；代用品, 代理人", "preps": ["for"], "contexts": [{"preps": ["for"], "hint": "～を(…の代わりに)代用する(for…)"}]}, {"id": 57, "en": "subject", "ja": "科目, 主題, 家来, 臣民；患者, 被験者；(～に)従属している, かかりやすい(to～)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "かかりやすい(to～)"}]}, {"id": 59, "en": "submit", "ja": "(～に)服従する, 身を任せる(to～)；～を服従させる, を提出する", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "身を任せる(to～)"}]}, {"id": 78, "en": "concentrate", "ja": "(～に)集中する(on～)；～を(…に)集中させる(on…)", "preps": ["on"], "contexts": [{"preps": ["on"], "hint": "(～に)集中する(on～)"}, {"preps": ["on"], "hint": "～を(…に)集中させる(on…)"}]}, {"id": 79, "en": "focus", "ja": "(～に)集中する, 重点を置く(on～)；焦点", "preps": ["on"], "contexts": [{"preps": ["on"], "hint": "重点を置く(on～)"}]}, {"id": 81, "en": "consist", "ja": "(～から)成る(of～), (～の中に)ある, 存在する(in～)", "preps": ["in", "of"], "contexts": [{"preps": ["of"], "hint": "(～から)成る(of～)"}, {"preps": ["in"], "hint": "存在する(in～)"}]}, {"id": 90, "en": "impose", "ja": "～を(…に)課す, 押しつける(on[upon]…)", "preps": ["on", "upon"], "contexts": [{"preps": ["on", "upon"], "hint": "押しつける(on[upon]…)"}]}, {"id": 96, "en": "incline", "ja": "～を傾ける, (…したい)気持ちにさせる(to do)", "preps": ["to"], "contexts": []}, {"id": 97, "en": "lean", "ja": "(～に)寄りかかる, もたれる(on[against]～)", "preps": ["against", "on"], "contexts": [{"preps": ["on", "against"], "hint": "もたれる(on[against]～)"}]}, {"id": 103, "en": "aim", "ja": "目標, 目的；(～を)狙う, 目標とする(at～)", "preps": ["at"], "contexts": [{"preps": ["at"], "hint": "目標とする(at～)"}]}, {"id": 111, "en": "cling", "ja": "(～に)しがみつく, 固執する(to～)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "固執する(to～)"}]}, {"id": 112, "en": "stick", "ja": "棒；(～に)くっつく, 固執する(to～)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "固執する(to～)"}]}, {"id": 134, "en": "restrict", "ja": "～を(…に)制限する(to…)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "～を(…に)制限する(to…)"}]}, {"id": 142, "en": "force", "ja": "力, 勢力；軍事力；～に(…することを)強制する(to do)", "preps": ["to"], "contexts": []}, {"id": 143, "en": "compel", "ja": "～に(…することを)強いる(to do)", "preps": ["to"], "contexts": []}, {"id": 144, "en": "oblige", "ja": "～に(…することを)義務づける, 余儀なくさせる(to do)", "preps": ["to"], "contexts": []}, {"id": 151, "en": "prohibit", "ja": "～を禁じる；～に(…するのを)禁じる(from doing)", "preps": ["from"], "contexts": []}, {"id": 154, "en": "permit", "ja": "～を許す, ～に(…するのを)許可する(to do)", "preps": ["to"], "contexts": []}, {"id": 155, "en": "allow", "ja": "～が(…するのを)許す(to do)", "preps": ["to"], "contexts": []}, {"id": 160, "en": "prevent", "ja": "～を防ぐ；～が(…するのを)妨げる(from doing)", "preps": ["from"], "contexts": []}, {"id": 162, "en": "hinder", "ja": "～を妨げる；～が(…するのを)妨げる(from doing)", "preps": ["from"], "contexts": []}, {"id": 163, "en": "refrain", "ja": "(～するのを)差し控える, 遠慮する(from doing)", "preps": ["from"], "contexts": []}, {"id": 167, "en": "interfere", "ja": "(～を)邪魔する, (に)干渉する(with～)", "preps": ["with"], "contexts": [{"preps": ["with"], "hint": "(に)干渉する(with～)"}]}, {"id": 168, "en": "cease", "ja": "～をやめる, しなくなる(to do, doing)", "preps": ["to"], "contexts": []}, {"id": 170, "en": "deprive", "ja": "～から(…を)奪う(of…)", "preps": ["of"], "contexts": [{"preps": ["of"], "hint": "～から(…を)奪う(of…)"}]}, {"id": 171, "en": "rob", "ja": "～から(…を)奪う, 強奪する(of…)", "preps": ["of"], "contexts": [{"preps": ["of"], "hint": "強奪する(of…)"}]}, {"id": 172, "en": "strip", "ja": "から(…を)はぎ取る, 除去する(of…)", "preps": ["of"], "contexts": [{"preps": ["of"], "hint": "除去する(of…)"}]}, {"id": 173, "en": "remove", "ja": "を(…から)除去する, 取り除く(from…)", "preps": ["from"], "contexts": [{"preps": ["from"], "hint": "取り除く(from…)"}]}, {"id": 183, "en": "offer", "ja": "～を(…に)提供する, 申し出る(to…)；提供, 申し出", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "申し出る(to…)"}]}, {"id": 184, "en": "furnish", "ja": "～に(…[家具など]を)備え付ける(with…)", "preps": ["with"], "contexts": [{"preps": ["with"], "hint": "～に(…[家具など]を)備え付ける(with…)"}]}, {"id": 185, "en": "equip", "ja": "～に(…を)装備する(with…)", "preps": ["with"], "contexts": [{"preps": ["with"], "hint": "～に(…を)装備する(with…)"}]}, {"id": 190, "en": "urge", "ja": "～に(…するよう)せき立てる(to do)；衝動, 欲望", "preps": ["to"], "contexts": []}, {"id": 191, "en": "encourage", "ja": "～を(…するよう)励ます, 促進する(to do)", "preps": ["to"], "contexts": []}, {"id": 195, "en": "attempt", "ja": "試み, 企画；～を(しようと)試みる(to do)", "preps": ["to"], "contexts": []}, {"id": 209, "en": "embark", "ja": "(～に)船出する, 着手する(on～)", "preps": ["on"], "contexts": [{"preps": ["on"], "hint": "着手する(on～)"}]}, {"id": 210, "en": "hesitate", "ja": "(～するのを)ためらう, 躊躇する(to do)", "preps": ["to"], "contexts": []}, {"id": 213, "en": "strive", "ja": "(～を得ようと)努力する, 奮闘する(for～)", "preps": ["for"], "contexts": [{"preps": ["for"], "hint": "奮闘する(for～)"}]}, {"id": 214, "en": "assign", "ja": "～を(…に)割り当てる, 課す(to…)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "課す(to…)"}]}, {"id": 216, "en": "responsible", "ja": "(～に対して)責任のある(for～)", "preps": ["for"], "contexts": [{"preps": ["for"], "hint": "(～に対して)責任のある(for～)"}]}, {"id": 237, "en": "persist", "ja": "ねばる, しつこく主張する(in～)", "preps": ["in"], "contexts": [{"preps": ["in"], "hint": "しつこく主張する(in～)"}]}, {"id": 264, "en": "prompt", "ja": "即座の, 素早い；～を(…するよう)促す, 刺激する(to do)", "preps": ["to"], "contexts": []}, {"id": 280, "en": "posterior", "ja": "(～より)後の(to～)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(～より)後の(to～)"}]}, {"id": 281, "en": "prior", "ja": "(～より)前の(to～)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(～より)前の(to～)"}]}, {"id": 284, "en": "coincide", "ja": "(～と)同時に起こる, 一致する(with～)", "preps": ["with"], "contexts": [{"preps": ["with"], "hint": "一致する(with～)"}]}, {"id": 316, "en": "afford", "ja": "(経済的・時間的に～する)余裕がある(to do)", "preps": ["to"], "contexts": []}, {"id": 319, "en": "owe", "ja": "～を(…に)借りている, 恩恵がある(to…)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "恩恵がある(to…)"}]}, {"id": 346, "en": "intrude", "ja": "(～に)侵入する(into, on～)", "preps": ["into", "on"], "contexts": [{"preps": ["into", "on"], "hint": "(～に)侵入する(into, on～)"}]}, {"id": 357, "en": "exclude", "ja": "～を(…から)除外する(from…)", "preps": ["from"], "contexts": [{"preps": ["from"], "hint": "～を(…から)除外する(from…)"}]}, {"id": 366, "en": "search", "ja": "(…を求めて)～の中を探す(for…)；探求, 探索", "preps": ["for"], "contexts": [{"preps": ["for"], "hint": "(…を求めて)～の中を探す(for…)"}]}, {"id": 369, "en": "apart", "ja": "(～から)離れて(from～)", "preps": ["from"], "contexts": [{"preps": ["from"], "hint": "(～から)離れて(from～)"}]}, {"id": 371, "en": "replace", "ja": "～にとって代わる；～を(…と)置き換える(with…)", "preps": ["with"], "contexts": [{"preps": ["with"], "hint": "～を(…と)置き換える(with…)"}]}, {"id": 381, "en": "arise", "ja": "(～から)生じる(from～)", "preps": ["from"], "contexts": [{"preps": ["from"], "hint": "(～から)生じる(from～)"}]}, {"id": 382, "en": "stem", "ja": "(～から)生じる(from～)；茎", "preps": ["from"], "contexts": [{"preps": ["from"], "hint": "(～から)生じる(from～)"}]}, {"id": 384, "en": "derive", "ja": "(～に)由来する(from～)；(…から)～を引き出す(from…)", "preps": ["from"], "contexts": [{"preps": ["from"], "hint": "(～に)由来する(from～)"}, {"preps": ["from"], "hint": "(…から)～を引き出す(from…)"}]}, {"id": 410, "en": "regard", "ja": "～を(…と)みなす(as…), ～を尊重する, に敬意を払う；尊敬, 敬意, 点", "preps": ["as"], "contexts": [{"preps": ["as"], "hint": "～を(…と)みなす(as…)"}]}, {"id": 411, "en": "account", "ja": "説明, 報告, 口座, 勘定, 重要性；(～[理由]を)説明する(for～)；(～[割合]を)占める(for～)", "preps": ["for"], "contexts": [{"preps": ["for"], "hint": "(～[理由]を)説明する(for～)"}, {"preps": ["for"], "hint": "(～[割合]を)占める(for～)"}]}, {"id": 413, "en": "anxious", "ja": "(～を)心配している(about～), (～を)切望している(for～, to do)", "preps": ["about"], "contexts": [{"preps": ["about"], "hint": "(～を)心配している(about～)"}]}, {"id": 414, "en": "attend", "ja": "～に出席する；(～を)注意して聞く(to～), (～に)付き添う, 看護する(on～)", "preps": ["on", "to"], "contexts": [{"preps": ["to"], "hint": "(～を)注意して聞く(to～)"}, {"preps": ["on"], "hint": "看護する(on～)"}]}, {"id": 415, "en": "apply", "ja": "～を(…に)適用する, 応用する(to…)；(～に)応募する, 志願する(for～)", "preps": ["for", "to"], "contexts": [{"preps": ["to"], "hint": "応用する(to…)"}, {"preps": ["for"], "hint": "志願する(for～)"}]}, {"id": 416, "en": "reflect", "ja": "～を反射する, 反映する；(～を)熟考する(on～)", "preps": ["on"], "contexts": [{"preps": ["on"], "hint": "(～を)熟考する(on～)"}]}, {"id": 417, "en": "wait", "ja": "(～を)待つ(for～), (～に)仕える, 給仕する(on[upon]～)", "preps": ["for", "on", "upon"], "contexts": [{"preps": ["for"], "hint": "(～を)待つ(for～)"}, {"preps": ["on", "upon"], "hint": "給仕する(on[upon]～)"}]}, {"id": 439, "en": "refuse", "ja": "～を拒否する；～しようとしない(to do)", "preps": ["to"], "contexts": []}, {"id": 451, "en": "pretend", "ja": "(～する)ふりをする(to do)", "preps": ["to"], "contexts": []}, {"id": 453, "en": "belong", "ja": "(～に)属する, (～の)所有である(to～)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(～の)所有である(to～)"}]}, {"id": 454, "en": "fail", "ja": "(～に)失敗する(in～)；(～)しない, できない(to do)", "preps": ["in", "to"], "contexts": [{"preps": ["in"], "hint": "(～に)失敗する(in～)"}]}, {"id": 455, "en": "enable", "ja": "～に(…するのを)可能にさせる(to do)", "preps": ["to"], "contexts": []}, {"id": 469, "en": "lead", "ja": "～を(…へ)導く(to…)；(～を)引き起こす(to～)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "～を(…へ)導く(to…)"}, {"preps": ["to"], "hint": "(～を)引き起こす(to～)"}]}, {"id": 492, "en": "relate", "ja": "～を(…に)関連づける(to…) ～を話す", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "～を(…に)関連づける(to…)"}]}, {"id": 494, "en": "relevant", "ja": "(～と)関連がある(to～), 適切な", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(～と)関連がある(to～)"}]}, {"id": 496, "en": "associate", "ja": "～を(…と)関連づける(with…)；連想する", "preps": ["with"], "contexts": [{"preps": ["with"], "hint": "～を(…と)関連づける(with…)"}]}, {"id": 502, "en": "object", "ja": "物体, 対象, 目的；(～に)反対する(to～)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(～に)反対する(to～)"}]}, {"id": 503, "en": "contrary", "ja": "(～と)反対の(to～)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(～と)反対の(to～)"}]}, {"id": 506, "en": "approve", "ja": "～に賛成する, を認める；(～に)賛成する, 認める(of～)", "preps": ["of"], "contexts": [{"preps": ["of"], "hint": "認める(of～)"}]}, {"id": 507, "en": "consent", "ja": "(～に)同意する(to～)；同意", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(～に)同意する(to～)"}]}, {"id": 508, "en": "correspond", "ja": "(～と)一致する, 合致する(with～)；(～に)対応する(to～)", "preps": ["to", "with"], "contexts": [{"preps": ["with"], "hint": "合致する(with～)"}, {"preps": ["to"], "hint": "(～に)対応する(to～)"}]}, {"id": 509, "en": "accord", "ja": "(～と)一致する, 調和する(with～)", "preps": ["with"], "contexts": [{"preps": ["with"], "hint": "調和する(with～)"}]}, {"id": 510, "en": "conform", "ja": "(～に)従う, 順応する, 一致する(to～)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "一致する(to～)"}]}, {"id": 511, "en": "compatible", "ja": "(～と)両立可能な, 矛盾しない(with～)", "preps": ["with"], "contexts": [{"preps": ["with"], "hint": "矛盾しない(with～)"}]}, {"id": 512, "en": "compare", "ja": "～を(…と)比較する(with, to…)", "preps": ["to", "with"], "contexts": [{"preps": ["with", "to"], "hint": "～を(…と)比較する(with, to…)"}]}, {"id": 513, "en": "confuse", "ja": "～を(…と)混同する(with…)；を混乱させる", "preps": ["with"], "contexts": [{"preps": ["with"], "hint": "～を(…と)混同する(with…)"}]}, {"id": 514, "en": "equal", "ja": "(～と)等しい, 匹敵する, するだけの能力がある(to～)；～に等しい", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "するだけの能力がある(to～)"}]}, {"id": 515, "en": "equivalent", "ja": "(～と)同等の(to～)；同等のもの", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(～と)同等の(to～)"}]}, {"id": 519, "en": "differ", "ja": "(～と)(…の点で)異なる(from～)(in…)", "preps": ["from", "in"], "contexts": [{"preps": ["from"], "hint": "(～と)(…の点で)異なる(from～)"}]}, {"id": 539, "en": "refer", "ja": "(～に)言及する；(を)参照する；(を)指す(to～)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(を)指す(to～)"}]}, {"id": 547, "en": "subscribe", "ja": "(～を)定期購読する(to～)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(～を)定期購読する(to～)"}]}, {"id": 578, "en": "inquire", "ja": "(～について)尋ねる(about～)；(～を)調査する(into～)", "preps": ["about", "into"], "contexts": [{"preps": ["about"], "hint": "(～について)尋ねる(about～)"}, {"preps": ["into"], "hint": "(～を)調査する(into～)"}]}, {"id": 589, "en": "prove", "ja": "～を証明する；(～であると)分かる, 判明する(to be～)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "判明する(to be～)"}]}, {"id": 593, "en": "expert", "ja": "専門家；(～に)熟達した(at, in～)", "preps": ["at", "in"], "contexts": [{"preps": ["at", "in"], "hint": "(～に)熟達した(at, in～)"}]}, {"id": 596, "en": "specialize", "ja": "(～を)専攻する, 専門にする(in～)", "preps": ["in"], "contexts": [{"preps": ["in"], "hint": "専門にする(in～)"}]}, {"id": 675, "en": "influence", "ja": "(～に対する)影響(on～)；～に影響を及ぼす", "preps": ["on"], "contexts": [{"preps": ["on"], "hint": "(～に対する)影響(on～)"}]}, {"id": 676, "en": "impact", "ja": "(～に対する)影響、衝撃(on～)", "preps": ["on"], "contexts": [{"preps": ["on"], "hint": "(～に対する)影響、衝撃(on～)"}]}, {"id": 700, "en": "depend", "ja": "(～に)依存する；よる、左右される(on～)", "preps": ["on"], "contexts": [{"preps": ["on"], "hint": "よる、左右される(on～)"}]}, {"id": 701, "en": "independent", "ja": "(～から)独立している(of～)", "preps": ["of"], "contexts": [{"preps": ["of"], "hint": "(～から)独立している(of～)"}]}, {"id": 702, "en": "rely", "ja": "(～に)頼る、(を)あてにする(on[upon]～)", "preps": ["on", "upon"], "contexts": [{"preps": ["on", "upon"], "hint": "(～に)頼る、(を)あてにする(on[upon]～)"}]}, {"id": 722, "en": "sensitive", "ja": "敏感な(to～)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "敏感な(to～)"}]}, {"id": 730, "en": "stare", "ja": "(じろじろ)見つめる(at～)", "preps": ["at"], "contexts": [{"preps": ["at"], "hint": "(じろじろ)見つめる(at～)"}]}, {"id": 731, "en": "gaze", "ja": "(うっとりして・ぼーっと)見つめる(at～)", "preps": ["at"], "contexts": [{"preps": ["at"], "hint": "(うっとりして・ぼーっと)見つめる(at～)"}]}, {"id": 732, "en": "glance", "ja": "(意識的に)ちらりと見る(at～)", "preps": ["at"], "contexts": [{"preps": ["at"], "hint": "(意識的に)ちらりと見る(at～)"}]}, {"id": 744, "en": "impulse", "ja": "衝動(to do)", "preps": ["to"], "contexts": []}, {"id": 780, "en": "punish", "ja": "罰する(for…)", "preps": ["for"], "contexts": [{"preps": ["for"], "hint": "罰する(for…)"}]}, {"id": 1015, "en": "alternative", "ja": "(取りうる)選択肢、(～の)代案(to～)；代わりの", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(取りうる)選択肢、(～の)代案(to～)"}]}, {"id": 1025, "en": "occur", "ja": "起こる；(～に)思い浮かぶ(to～)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(～に)思い浮かぶ(to～)"}]}, {"id": 1030, "en": "participate", "ja": "参加する(in～)", "preps": ["in"], "contexts": [{"preps": ["in"], "hint": "参加する(in～)"}]}, {"id": 1031, "en": "take part", "ja": "参加する(in～)", "preps": ["in"], "contexts": [{"preps": ["in"], "hint": "参加する(in～)"}]}, {"id": 1034, "en": "engage", "ja": "～を従事させる；(～に)従事する(in～)", "preps": ["in"], "contexts": [{"preps": ["in"], "hint": "(～に)従事する(in～)"}]}, {"id": 1035, "en": "indulge", "ja": "～を没頭させる、甘やかす(～に)没頭する、耽る(in～)", "preps": ["in"], "contexts": [{"preps": ["in"], "hint": "～を没頭させる、甘やかす(～に)没頭する、耽る(in～)"}]}, {"id": 1081, "en": "vote", "ja": "(～に)投票する(for～)；投票", "preps": ["for"], "contexts": [{"preps": ["for"], "hint": "(～に)投票する(for～)"}]}, {"id": 1159, "en": "treat", "ja": "～を扱う、に接する；～を治療する；～に(…を)おごる(to…)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "～に(…を)おごる(to…)"}]}, {"id": 1160, "en": "recover", "ja": "(～から)回復する(from～)；～を取り戻す", "preps": ["from"], "contexts": [{"preps": ["from"], "hint": "(～から)回復する(from～)"}]}, {"id": 1161, "en": "operate", "ja": "作動・作用する；(～に)手術する(on～)；～を操作する", "preps": ["on"], "contexts": [{"preps": ["on"], "hint": "(～に)手術する(on～)"}]}, {"id": 1174, "en": "immune", "ja": "(～に対して)免疫のある(to～)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(～に対して)免疫のある(to～)"}]}, {"id": 1243, "en": "inherent", "ja": "(～に)本来備わっている(in～)", "preps": ["in"], "contexts": [{"preps": ["in"], "hint": "(～に)本来備わっている(in～)"}]}, {"id": 1286, "en": "yell", "ja": "(～に向かって)叫ぶ(at～)", "preps": ["at"], "contexts": [{"preps": ["at"], "hint": "(～に向かって)叫ぶ(at～)"}]}, {"id": 1347, "en": "tend", "ja": "(～する)傾向がある(to do)", "preps": ["to"], "contexts": []}, {"id": 1349, "en": "apt", "ja": "～しがちである(to do)", "preps": ["to"], "contexts": []}, {"id": 1350, "en": "liable", "ja": "(～)しがちである(to do)；(～に対して)法的責任がある(for～)", "preps": ["for", "to"], "contexts": [{"preps": ["for"], "hint": "(～に対して)法的責任がある(for～)"}]}, {"id": 1351, "en": "prone", "ja": "(～)しがちである(to do)、(を)こうむりがちである(to～)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "do)、(を)こうむりがちである(to～)"}]}, {"id": 1352, "en": "susceptible", "ja": "(～の)影響を受けやすい、(を)こうむりがちである(to～)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(～の)影響を受けやすい、(を)こうむりがちである(to～)"}]}, {"id": 1353, "en": "likely", "ja": "(～)しそうである(to do)", "preps": ["to"], "contexts": []}, {"id": 1359, "en": "eager", "ja": "(～することを)熱望している、しきりに～したがっている(to do, for～)", "preps": ["for", "to"], "contexts": [{"preps": ["to", "for"], "hint": "(～することを)熱望している、しきりに～したがっている(to do, for～)"}]}, {"id": 1360, "en": "willing", "ja": "(～することを)いとわない、快く～する(to do)", "preps": ["to"], "contexts": []}, {"id": 1363, "en": "keen", "ja": "(～に)熱心な(on[upon]～)；鋭い", "preps": ["on", "upon"], "contexts": [{"preps": ["on", "upon"], "hint": "(～に)熱心な(on[upon]～)"}]}, {"id": 1366, "en": "aspire", "ja": "(～することを)熱望する(to do, for)", "preps": ["to"], "contexts": []}, {"id": 1367, "en": "yearn", "ja": "(～することを)熱望する(to do, for)", "preps": ["to"], "contexts": []}, {"id": 1369, "en": "tempt", "ja": "～を(…するよう)誘惑する(to do, into doing)", "preps": ["to"], "contexts": []}, {"id": 1371, "en": "appeal", "ja": "魅力、人気；訴え、要請；(～に)訴える、要請する(to～)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(～に)訴える、要請する(to～)"}]}, {"id": 1376, "en": "adjust", "ja": "(～に)順応する、適応する(to～)；～を(…に)適合させる(to…)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(～に)順応する、適応する(to～)"}, {"preps": ["to"], "hint": "～を(…に)適合させる(to…)"}]}, {"id": 1377, "en": "adapt", "ja": "(～に)順応する、適応する(to～)；～を(…に)適合させる(to…)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(～に)順応する、適応する(to～)"}, {"preps": ["to"], "hint": "～を(…に)適合させる(to…)"}]}, {"id": 1472, "en": "impart", "ja": "～を(…に)与える、伝える(to…)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "～を(…に)与える、伝える(to…)"}]}, {"id": 1473, "en": "donate", "ja": "～を(…に)寄付する、贈与する(to…)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "～を(…に)寄付する、贈与する(to…)"}]}, {"id": 1738, "en": "parallel", "ja": "(～と)平行の、類似した(to～)；類似(物)、匹敵するもの", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(～と)平行の、類似した(to～)"}]}, {"id": 1839, "en": "resort", "ja": "(～[手段]に)訴える(to～) 行楽地", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(～[手段]に)訴える(to～)"}]}, {"id": 1857, "en": "inspire", "ja": "～を(…するよう)奮起させる、の創作意欲をかき立てる(to do)", "preps": ["to"], "contexts": []}, {"id": 1933, "en": "charge", "ja": "～を(…で)非難する；告発する(with…)；～に料金を課す；～に責任を課す；～を充電する；非難；料金；責任", "preps": ["with"], "contexts": [{"preps": ["with"], "hint": "告発する(with…)"}]}, {"id": 1950, "en": "slave", "ja": "奴隷；(～に)とらわれている人(to～)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(～に)とらわれている人(to～)"}]}, {"id": 2012, "en": "ascribe", "ja": "(…に)～の原因を帰す(to…)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(…に)～の原因を帰す(to…)"}]}, {"id": 2016, "en": "contend", "ja": "…と主張する(that…)；(～と)争う、(に)対処する(with～)", "preps": ["with"], "contexts": [{"preps": ["with"], "hint": "(～と)争う、(に)対処する(with～)"}]}, {"id": 2020, "en": "pledge", "ja": "約束、誓約；～を約束する、誓約する(to do, that…)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "～を約束する、誓約する(to do, that…)"}]}, {"id": 2034, "en": "induce", "ja": "～を誘発する、を(…)する気にさせる(to do)", "preps": ["to"], "contexts": []}, {"id": 2049, "en": "adhere", "ja": "(～に)くっつく、(を)固守する(to～)", "preps": ["to"], "contexts": [{"preps": ["to"], "hint": "(～に)くっつく、(を)固守する(to～)"}]}, {"id": 2058, "en": "comply", "ja": "～(規則・命令・基準)に従う、合致する(with～)", "preps": ["with"], "contexts": [{"preps": ["with"], "hint": "～(規則・命令・基準)に従う、合致する(with～)"}]}, {"id": 2062, "en": "incorporate", "ja": "～を(…に)組み込む(into…)", "preps": ["into"], "contexts": [{"preps": ["into"], "hint": "～を(…に)組み込む(into…)"}]}, {"id": 2074, "en": "marvel", "ja": "(～に)驚く、驚き(at～)；驚き", "preps": ["at"], "contexts": [{"preps": ["at"], "hint": "(～に)驚く、驚き(at～)"}]}, {"id": 2141, "en": "dispose", "ja": "(～する)気にさせる(to do)；～を配置する", "preps": ["to"], "contexts": []}];
+
+// ===== STATE =====
+const ALL_PREPS = ["to","for","from","with","in","on","of","at","about","into","upon","over","against","as"];
+let session = {
+  mode: null,
+  list: [],
+  index: 0,
+  correct: 0,
+  wrong: 0,
+  mistakes: [], // {word, correctPreps, yourAnswer}
+  answered: false,
+};
+let missedIds = JSON.parse(localStorage.getItem('prep_missed') || '[]');
+
+// ===== VIEW UTILS =====
+function showView(id) {
+  ['view-menu','view-quiz','view-result','view-list'].forEach(v => {
+    document.getElementById(v).classList.remove('active');
+  });
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function updateHeader() {
+  document.getElementById('hdr-correct').textContent = session.correct;
+  document.getElementById('hdr-wrong').textContent = session.wrong;
+}
+
+// ===== QUIZ SETUP =====
+function buildList() {
+  const from = parseInt(document.getElementById('opt-from').value) || 1;
+  const to = parseInt(document.getElementById('opt-to').value) || 2176;
+  let list = prepWords.filter(w => w.id >= from && w.id <= to);
+  if (document.getElementById('opt-order').value === 'rand') {
+    list.sort(() => Math.random() - 0.5);
+  }
+  const cnt = document.getElementById('opt-count').value;
+  if (cnt !== 'all') list = list.slice(0, parseInt(cnt));
+  return list;
+}
+
+function startQuiz(mode) {
+  let list;
+  if (mode === 'miss') {
+    list = prepWords.filter(w => missedIds.includes(w.id));
+    if (list.length === 0) { alert('まだ間違えた単語がありません！'); return; }
+    if (document.getElementById('opt-order').value === 'rand') list.sort(() => Math.random() - 0.5);
+  } else {
+    list = buildList();
+    if (list.length === 0) { alert('対象となる単語がありません'); return; }
+  }
+  session = { mode, list, index: 0, correct: 0, wrong: 0, mistakes: [], answered: false };
+  showView('view-quiz');
+  renderQuestion();
+}
+
+// ===== QUESTION RENDER =====
+function renderQuestion() {
+  const w = session.list[session.index];
+  const total = session.list.length;
+  const pct = (session.index / total * 100).toFixed(1);
+  document.getElementById('q-progress').style.width = pct + '%';
+  document.getElementById('q-counter').textContent = (session.index+1) + ' / ' + total;
+  document.getElementById('q-correct').textContent = session.correct;
+  document.getElementById('q-wrong').textContent = session.wrong;
+  document.getElementById('q-num').textContent = '#' + w.id;
+  document.getElementById('q-word').textContent = w.en;
+
+  // Show meaning with blanked prepositions
+  const jaBlank = blankPreps(w.ja, w.preps);
+  document.getElementById('q-ja').innerHTML = jaBlank;
+
+  // Context hint
+  const ctxEl = document.getElementById('q-context');
+  if (w.contexts && w.contexts.length > 0) {
+    // Show a usage hint
+    const ctx = w.contexts[0];
+    let hintText = ctx.hint.replace(/\(([^)]+)[～…]\)/g, (m, inner) => {
+      // blank the preps in the hint
+      let blanked = inner;
+      w.preps.forEach(p => {
+        blanked = blanked.replace(new RegExp('\\b' + p + '\\b','gi'), '<span>?</span>');
+      });
+      return '(' + blanked + '～)';
+    });
+    ctxEl.innerHTML = '💡 用例: ' + hintText;
+    ctxEl.style.display = '';
+  } else {
+    ctxEl.style.display = 'none';
+  }
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback';
+  fb.style.display = 'none';
+  document.getElementById('btn-next').style.display = 'none';
+  session.answered = false;
+
+  if (session.mode === 'input') {
+    document.getElementById('q-mode-tag').textContent = '入力';
+    document.getElementById('choices-area').style.display = 'none';
+    document.getElementById('input-area').style.display = '';
+    const inp = document.getElementById('prep-input');
+    inp.value = '';
+    inp.className = 'prep-input';
+    inp.disabled = false;
+    inp.focus();
+    // Multiple preps label
+    document.getElementById('q-label').textContent =
+      w.preps.length > 1 ? `前置詞を入力（${w.preps.length}種使用）` : '使う前置詞を入力してください';
+  } else {
+    document.getElementById('q-mode-tag').textContent = '4択';
+    document.getElementById('input-area').style.display = 'none';
+    document.getElementById('choices-area').style.display = 'grid';
+    renderChoices(w);
+    document.getElementById('q-label').textContent = '使う前置詞はどれ？';
+  }
+}
+
+function blankPreps(ja, preps) {
+  let result = ja;
+  preps.forEach(p => {
+    const re = new RegExp('\\b(' + p + ')\\b', 'gi');
+    result = result.replace(re, '<span style="color:var(--yellow);font-weight:700;font-family:JetBrains Mono,monospace">?</span>');
+  });
+  return result;
+}
+
+function renderChoices(w) {
+  const area = document.getElementById('choices-area');
+  area.innerHTML = '';
+  // Build 4 options: correct + 3 distractors
+  const correct = w.preps[0]; // primary prep
+  let distractors = ALL_PREPS.filter(p => !w.preps.includes(p));
+  distractors.sort(() => Math.random() - 0.5);
+  distractors = distractors.slice(0, 3);
+  let options = [correct, ...distractors].sort(() => Math.random() - 0.5);
+
+  // If word has multiple preps, show all correct ones as answer label
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = opt;
+    btn.onclick = () => checkChoice(opt, w, btn);
+    area.appendChild(btn);
+  });
+}
+
+// ===== CHECK ANSWER =====
+function checkChoice(chosen, w, btn) {
+  if (session.answered) return;
+  session.answered = true;
+  const isCorrect = w.preps.includes(chosen);
+
+  // Highlight
+  document.querySelectorAll('.choice-btn').forEach(b => {
+    b.disabled = true;
+    if (w.preps.includes(b.textContent)) b.classList.add('correct');
+    else if (b === btn && !isCorrect) b.classList.add('wrong');
+  });
+
+  showFeedback(isCorrect, w, chosen);
+  document.getElementById('btn-next').style.display = '';
+}
+
+document.addEventListener('keydown', e => {
+  if (document.getElementById('view-quiz').classList.contains('active')) {
+    if (e.key === 'Enter' && session.mode === 'input') submitInput();
+    if (e.key === 'ArrowRight' || e.key === 'Enter') {
+      if (session.answered && document.getElementById('btn-next').style.display !== 'none') {
+        nextQuestion();
+      }
+    }
+  }
+});
+
+function submitInput() {
+  if (session.answered) return;
+  const inp = document.getElementById('prep-input');
+  const val = inp.value.trim().toLowerCase();
+  if (!val) return;
+  const w = session.list[session.index];
+  const isCorrect = w.preps.includes(val);
+  session.answered = true;
+  inp.disabled = true;
+  inp.classList.add(isCorrect ? 'correct' : 'wrong');
+  showFeedback(isCorrect, w, val);
+  document.getElementById('btn-next').style.display = '';
+}
+
+function showFeedback(isCorrect, w, userAnswer) {
+  if (isCorrect) {
+    session.correct++;
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback ok show';
+    fb.style.display = 'block';
+    fb.innerHTML = '✓ 正解！ <span class="ans">' + userAnswer + '</span>'
+      + (w.preps.length > 1 ? ' — 他にも: <span class="ans">' + w.preps.filter(p=>p!==userAnswer).join(', ') + '</span>' : '')
+      + '<div class="ja-hint">' + w.ja + '</div>';
+    // Remove from missed
+    missedIds = missedIds.filter(id => id !== w.id);
+  } else {
+    session.wrong++;
+    session.mistakes.push({word: w, correct: w.preps, your: userAnswer});
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback ng show';
+    fb.style.display = 'block';
+    fb.innerHTML = '✗ 不正解 — 正解: <span class="ans">' + w.preps.join(' / ') + '</span>'
+      + '  あなたの答え: <span style="color:var(--red);font-family:JetBrains Mono,monospace">' + (userAnswer||'—') + '</span>'
+      + '<div class="ja-hint">' + w.ja + '</div>';
+    // Add to missed
+    if (!missedIds.includes(w.id)) missedIds.push(w.id);
+  }
+  localStorage.setItem('prep_missed', JSON.stringify(missedIds));
+  updateHeader();
+  document.getElementById('q-correct').textContent = session.correct;
+  document.getElementById('q-wrong').textContent = session.wrong;
+}
+
+function nextQuestion() {
+  session.index++;
+  if (session.index >= session.list.length) {
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+// ===== RESULT =====
+function showResult() {
+  showView('view-result');
+  const total = session.list.length;
+  const c = session.correct;
+  const w = session.wrong;
+  const pct = Math.round(c / total * 100);
+  document.getElementById('res-score').textContent = c + '/' + total;
+  document.getElementById('result-circle').style.setProperty('--score-pct', pct + '%');
+  document.getElementById('rs-correct').textContent = c;
+  document.getElementById('rs-wrong').textContent = w;
+  document.getElementById('rs-pct').textContent = pct + '%';
+
+  let title = pct >= 90 ? '完璧！🎉' : pct >= 70 ? 'よくできました！' : pct >= 50 ? 'もう少し！' : '要復習📚';
+  document.getElementById('res-title').textContent = title;
+  document.getElementById('res-sub').textContent = `${total}問中 ${c}問正解 (${pct}%)`;
+
+  const missEl = document.getElementById('result-miss');
+  const missList = document.getElementById('miss-list');
+  if (session.mistakes.length > 0) {
+    missEl.style.display = '';
+    missList.innerHTML = '';
+    session.mistakes.forEach(m => {
+      const div = document.createElement('div');
+      div.className = 'miss-item';
+      div.innerHTML = `<div class="miss-en">${m.word.en}</div>
+        <div class="miss-detail">
+          正解: <span class="miss-ans">${m.correct.join(' / ')}</span>
+          ${m.your ? '　あなた: <span class="miss-your">' + m.your + '</span>' : ''}
+          <br><span style="color:var(--muted);font-size:.75rem">${m.word.ja}</span>
+        </div>`;
+      missList.appendChild(div);
+    });
+  } else {
+    missEl.style.display = 'none';
+  }
+}
+
+function retryQuiz() {
+  startQuiz(session.mode);
+}
+
+function retryMiss() {
+  if (session.mistakes.length === 0) { alert('間違いはありませんでした！'); return; }
+  const mistakeIds = session.mistakes.map(m => m.word.id);
+  session.list = prepWords.filter(w => mistakeIds.includes(w.id)).sort(() => Math.random() - 0.5);
+  session.index = 0;
+  session.correct = 0;
+  session.wrong = 0;
+  session.mistakes = [];
+  session.answered = false;
+  showView('view-quiz');
+  renderQuestion();
+}
+
+// ===== LIST =====
+function showList() {
+  showView('view-list');
+  renderList();
+}
+
+function renderList() {
+  const q = document.getElementById('list-search').value.trim().toLowerCase();
+  const pf = document.getElementById('list-prep-filter').value;
+  let list = prepWords.filter(w => {
+    if (pf && !w.preps.includes(pf)) return false;
+    if (q && !w.en.toLowerCase().includes(q) && !w.ja.includes(q) && !w.preps.join(' ').includes(q)) return false;
+    return true;
+  });
+  document.getElementById('list-info').textContent = list.length + ' 語表示中';
+  const tbody = document.getElementById('list-body');
+  tbody.innerHTML = '';
+  list.forEach(w => {
+    const tr = document.createElement('tr');
+    const prepTags = w.preps.map(p => `<span class="prep-tag">${p}</span>`).join('');
+    // Truncate ja
+    const jaShort = w.ja.length > 60 ? w.ja.slice(0,60) + '…' : w.ja;
+    tr.innerHTML = `
+      <td class="td-num">${w.id}</td>
+      <td class="td-en">${w.en}</td>
+      <td class="td-prep">${prepTags}</td>
+      <td class="td-ja">${jaShort}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ===== INIT =====
+updateHeader();
+</script>
+
+</body>
+</html>
